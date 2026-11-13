@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت ناوگان | ورود</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <header class="header">
+        <h1>🚛 مدیریت ناوگان</h1>
+        <p>سامانه هوشمند مدیریت کامیون‌ها</p>
+    </header>
+
+    <main class="login-container">
+
+        <section id="authSection" class="panel">
+            <h2 id="formTitle">ورود به حساب کاربری</h2>
+
+            <form id="authForm">
+                <label for="email">ایمیل</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="ایمیل خود را وارد کنید"
+                    required
+                >
+
+                <label for="password">رمز عبور</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="رمز عبور"
+                    minlength="6"
+                    required
+                >
+
+                <button type="submit" id="submitButton">
+                    ورود
+                </button>
+            </form>
+
+            <p id="message"></p>
+
+            <button type="button" class="switch-button" id="switchMode">
+                حساب ندارید؟ ثبت‌نام کنید
+            </button>
+        </section>
+
+        <section id="dashboard" class="panel hidden">
+            <h2>خوش آمدید! 🎉</h2>
+            <p id="userEmail"></p>
+            <h3>صفحه شخصی شما</h3>
+            <p>به سامانه مدیریت کامیون‌ها خوش آمدید.</p>
+
+            <button type="button" id="logoutButton">
+                خروج از حساب
+            </button>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>سامانه مدیریت ناوگان | طراحی مشکی و طلایی</p>
+    </footer>
+
+</body>
+</html>
