@@ -1,155 +1,284 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Tahoma, Arial, sans-serif;
 }
 
 body {
-    font-family: 'Vazirmatn', sans-serif;
-    background:
-        radial-gradient(circle at top right, #29200c, transparent 35%),
-        #080808;
-    color: #fff;
     min-height: 100vh;
-}
-
-.header {
-    text-align: center;
-    padding: 45px 20px 30px;
-    border-bottom: 1px solid #80651e;
-    background: linear-gradient(120deg, #111, #211a0b);
-}
-
-.header h1 {
-    color: #e8c45d;
-    font-size: 32px;
-    font-weight: 800;
-}
-
-.header p {
-    color: #aaa;
-    margin-top: 10px;
-}
-
-.login-container {
-    width: 92%;
-    max-width: 480px;
-    margin: 65px auto;
-}
-
-.panel {
-    background: linear-gradient(145deg, #1d1d1d, #101010);
-    border: 1px solid #a0832e;
-    border-radius: 20px;
-    padding: 35px;
-    box-shadow: 0 15px 45px #000;
-}
-
-.panel h2 {
-    color: #e8c45d;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.panel h3 {
-    color: #e8c45d;
-    margin: 25px 0 12px;
-}
-
-label {
-    display: block;
-    color: #e8c45d;
-    margin: 18px 0 9px;
-    font-weight: 600;
-}
-
-input {
-    width: 100%;
-    padding: 15px;
-    background: #080808;
+    background: #050505;
     color: white;
-    border: 1px solid #75602b;
-    border-radius: 10px;
-    outline: none;
-    font-family: inherit;
+    overflow-x: hidden;
+}
+
+/* پس زمینه ولوو */
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url("./Volvo.jpeg") center center / cover no-repeat;
+}
+
+/* لایه تاریک روی عکس */
+.dark-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.60);
+}
+
+/* سربرگ */
+.header {
+    height: 95px;
+    padding: 15px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(212,175,55,0.4);
+    background: rgba(0,0,0,0.45);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-icon {
+    width: 55px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #d4af37;
+    color: #e6c45a;
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.logo h2 {
+    color: #e6c45a;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: #aaa;
+    font-size: 9px;
+    letter-spacing: 2px;
+}
+
+.header-label {
+    color: #e6c45a;
     font-size: 14px;
 }
 
-input:focus {
-    border-color: #f3d77a;
-    box-shadow: 0 0 10px #d4af3740;
+/* مرکز صفحه */
+.main {
+    min-height: calc(100vh - 155px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 35px 15px;
 }
 
-button {
+/* کادر ورود */
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    padding: 38px;
+    text-align: center;
+    background: rgba(8,8,8,0.88);
+    border: 1px solid rgba(212,175,55,0.8);
+    border-radius: 18px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 45px rgba(212,175,55,0.18);
+}
+
+/* لوگوی وسط */
+.emblem {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: grid;
+    place-items: center;
+    color: #e6c45a;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.login-card h1 {
+    color: #e6c45a;
+    font-size: 27px;
+    margin-bottom: 12px;
+}
+
+.description {
+    color: #bbb;
+    font-size: 13px;
+    line-height: 2;
+    margin-bottom: 28px;
+}
+
+/* فیلدهای ورود */
+.field {
+    text-align: right;
+    margin-bottom: 22px;
+}
+
+.field label {
+    display: block;
+    color: #e6c45a;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.field input {
     width: 100%;
     padding: 15px;
-    margin-top: 25px;
-    background: linear-gradient(120deg, #b18b25, #f3d77a);
+    background: #171717;
+    border: 1px solid #555;
+    border-radius: 9px;
+    outline: none;
+    color: white;
+    font-size: 14px;
+}
+
+.field input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 12px rgba(212,175,55,0.2);
+}
+
+/* دکمه ورود */
+#submitButton,
+.logout-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg,#f5dc83,#b8860b);
     color: #111;
     border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 800;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
 }
 
-button:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.12);
+#submitButton:hover,
+.logout-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(212,175,55,0.3);
+}
+
+#submitButton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#message {
+    font-size: 13px;
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+/* ثبت نام */
+.separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0;
+    color: #aaa;
+}
+
+.separator::before,
+.separator::after {
+    content: "";
+    height: 1px;
+    background: #555;
+    flex: 1;
 }
 
 .switch-button {
     background: transparent;
-    color: #e8c45d;
-    border: 1px solid #75602b;
-    margin-top: 15px;
+    border: none;
+    color: #e6c45a;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .switch-button:hover {
-    background: #29200c;
+    color: white;
 }
 
-#message {
+/* داشبورد */
+.dashboard {
+    width: 100%;
+    max-width: 850px;
+    padding: 35px;
     text-align: center;
-    margin-top: 15px;
-    color: #e8c45d;
-    font-size: 13px;
-    overflow-wrap: anywhere;
+    background: rgba(8,8,8,0.94);
+    border: 1px solid #d4af37;
+    border-radius: 18px;
 }
 
-#userEmail {
-    color: #ddd;
-    text-align: center;
-    direction: ltr;
+.dashboard h1 {
+    color: #e6c45a;
+    margin-bottom: 15px;
 }
 
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.dashboard-item {
+    padding: 23px 10px;
+    background: #171717;
+    border: 1px solid #806b2d;
+    border-radius: 10px;
+    color: #e6c45a;
+}
+
+/* مخفی کردن بخش ها */
 .hidden {
-    display: none;
+    display: none !important;
 }
 
-footer {
-    text-align: center;
-    color: #9b8241;
-    padding: 25px;
-    border-top: 1px solid #5c491d;
-    margin-top: 60px;
+/* پایین صفحه */
+.footer {
+    min-height: 60px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #c5a747;
+    font-size: 11px;
+    background: rgba(0,0,0,0.4);
 }
 
-@media (max-width: 500px) {
-    .header h1 {
-        font-size: 24px;
+/* موبایل */
+@media(max-width:600px) {
+    .header {
+        height: auto;
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .panel {
-        padding: 24px 18px;
+    .login-card {
+        padding: 25px 20px;
     }
 
-    .login-container {
-        margin: 35px auto;
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 10px;
     }
 }

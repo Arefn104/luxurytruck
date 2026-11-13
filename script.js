@@ -1,20 +1,14 @@
 
-// ======================================
-// تنظیمات اتصال به Supabase
-// ======================================
+const SUPABASE_URL =
+    "https://qatsmrjbssvnohkptywe.supabase.co";
 
-const SUPABASE_URL = "https://qatsmrjbssvnohkptywe.supabase.co";
-
-const SUPABASE_KEY = "sb_publishable_iZwpVGWCxCUKxBJVv3D6DA_IG16Tr6u";
+const SUPABASE_KEY =
+    "sb_publishable_iZwpVGWCxCUKxBJVv3D6DA_IG16Tr6u";
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-
-// ======================================
-// گرفتن عناصر صفحه
-// ======================================
 
 const authForm = document.getElementById("authForm");
 const emailInput = document.getElementById("email");
@@ -29,11 +23,23 @@ const dashboard = document.getElementById("dashboard");
 const userEmail = document.getElementById("userEmail");
 const logoutButton = document.getElementById("logoutButton");
 
-// ======================================
-// حالت ورود یا ثبت نام
-// ======================================
-
 let isSignUp = false;
+
+function showMessage(text, success = false) {
+    message.textContent = text;
+    message.style.color = success ? "#d4af37" : "#ff7777";
+}
+
+function showDashboard(user) {
+    authSection.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    userEmail.textContent = "ایمیل شما: " + user.email;
+}
+
+function showLogin() {
+    dashboard.classList.add("hidden");
+    authSection.classList.remove("hidden");
+}
 
 switchMode.addEventListener("click", () => {
     isSignUp = !isSignUp;
@@ -43,46 +49,13 @@ switchMode.addEventListener("click", () => {
         submitButton.textContent = "ثبت نام";
         switchMode.textContent = "حساب دارید؟ وارد شوید";
     } else {
-        formTitle.textContent = "ورود به حساب کاربری";
-        submitButton.textContent = "ورود";
+        formTitle.textContent = "خوش آمدید";
+        submitButton.textContent = "ورود به حساب";
         switchMode.textContent = "حساب ندارید؟ ثبت‌نام کنید";
     }
 
-    message.textContent = "";
+    showMessage("");
 });
-
-// ======================================
-// نمایش پیام
-// ======================================
-
-function showMessage(text, success = false) {
-    message.textContent = text;
-    message.style.color = success ? "#d4af37" : "#ff7777";
-}
-
-// ======================================
-// نمایش صفحه شخصی
-// ======================================
-
-function showDashboard(user) {
-    authSection.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-
-    userEmail.textContent = "ایمیل شما: " + user.email;
-}
-
-// ======================================
-// نمایش صفحه ورود
-// ======================================
-
-function showLogin() {
-    dashboard.classList.add("hidden");
-    authSection.classList.remove("hidden");
-}
-
-// ======================================
-// ورود و ثبت نام
-// ======================================
 
 authForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -95,11 +68,10 @@ authForm.addEventListener("submit", async (event) => {
 
     try {
         if (isSignUp) {
-
             const { data, error } =
                 await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
+                    email,
+                    password
                 });
 
             if (error) throw error;
@@ -115,11 +87,10 @@ authForm.addEventListener("submit", async (event) => {
             }
 
         } else {
-
             const { data, error } =
                 await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
+                    email,
+                    password
                 });
 
             if (error) throw error;
@@ -129,17 +100,13 @@ authForm.addEventListener("submit", async (event) => {
 
     } catch (error) {
         showMessage("خطا: " + error.message);
+
     } finally {
         submitButton.disabled = false;
     }
 });
 
-// ======================================
-// خروج از حساب
-// ======================================
-
 logoutButton.addEventListener("click", async () => {
-
     const { error } = await supabaseClient.auth.signOut();
 
     if (error) {
@@ -152,32 +119,19 @@ logoutButton.addEventListener("click", async () => {
     showMessage("با موفقیت خارج شدید.", true);
 });
 
-// ======================================
-// بررسی وضعیت ورود هنگام باز شدن سایت
-// ======================================
-
 async function checkLogin() {
     const { data, error } =
         await supabaseClient.auth.getSession();
 
-    if (error) {
+    if (error || !data.session) {
         showLogin();
         return;
     }
 
-    if (data.session) {
-        showDashboard(data.session.user);
-    } else {
-        showLogin();
-    }
+    showDashboard(data.session.user);
 }
 
-// ======================================
-// بررسی تغییر وضعیت حساب
-// ======================================
-
 supabaseClient.auth.onAuthStateChange((event, session) => {
-
     if (event === "SIGNED_IN" && session) {
         showDashboard(session.user);
     }
@@ -187,5 +141,4 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     }
 });
 
-// شروع برنامه
 checkLogin();

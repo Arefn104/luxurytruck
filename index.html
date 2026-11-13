@@ -4,69 +4,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مدیریت ناوگان | ورود</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Luxury Truck</title>
+    <link rel="stylesheet" href="./style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js" defer></script>
+    <script src="./script.js" defer></script>
 </head>
 <body>
 
+    <div class="background"></div>
+    <div class="dark-overlay"></div>
+
     <header class="header">
-        <h1>🚛 مدیریت ناوگان</h1>
-        <p>سامانه هوشمند مدیریت کامیون‌ها</p>
+        <div class="logo">
+            <div class="logo-icon">LT</div>
+            <div>
+                <h2>LUXURY TRUCK</h2>
+                <span>PREMIUM TRUCK MANAGEMENT</span>
+            </div>
+        </div>
+        <div class="header-label">سیستم مدیریت ناوگان</div>
     </header>
 
-    <main class="login-container">
+    <main class="main">
 
-        <section id="authSection" class="panel">
-            <h2 id="formTitle">ورود به حساب کاربری</h2>
+        <section id="authSection" class="login-card">
+            <div class="emblem">LT</div>
+
+            <h1 id="formTitle">خوش آمدید</h1>
+            <p class="description">به دنیای لوکس مدیریت کامیون‌ها خوش آمدید</p>
 
             <form id="authForm">
-                <label for="email">ایمیل</label>
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="ایمیل خود را وارد کنید"
-                    required
-                >
 
-                <label for="password">رمز عبور</label>
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="رمز عبور"
-                    minlength="6"
-                    required
-                >
+                <div class="field">
+                    <label for="email">ایمیل کاربری</label>
+                    <input type="email" id="email"
+                        placeholder="ایمیل خود را وارد کنید" required>
+                </div>
+
+                <div class="field">
+                    <label for="password">رمز عبور</label>
+                    <input type="password" id="password"
+                        placeholder="رمز عبور خود را وارد کنید"
+                        minlength="6" required>
+                </div>
 
                 <button type="submit" id="submitButton">
-                    ورود
+                    ورود به حساب
                 </button>
+
+                <p id="message"></p>
             </form>
 
-            <p id="message"></p>
+            <div class="separator"><span>یا</span></div>
 
-            <button type="button" class="switch-button" id="switchMode">
+            <button type="button" id="switchMode" class="switch-button">
                 حساب ندارید؟ ثبت‌نام کنید
             </button>
         </section>
 
-        <section id="dashboard" class="panel hidden">
-            <h2>خوش آمدید! 🎉</h2>
+        <section id="dashboard" class="dashboard hidden">
+            <h1>به Luxury Truck خوش آمدید</h1>
             <p id="userEmail"></p>
-            <h3>صفحه شخصی شما</h3>
-            <p>به سامانه مدیریت کامیون‌ها خوش آمدید.</p>
 
-            <button type="button" id="logoutButton">
+            <div class="dashboard-grid">
+                <div class="dashboard-item">🚛 مدیریت کامیون‌ها</div>
+                <div class="dashboard-item">🔧 تعمیر و نگهداری</div>
+                <div class="dashboard-item">💰 حسابداری</div>
+                <div class="dashboard-item">📅 برنامه روزانه</div>
+                <div class="dashboard-item">🔔 اعلان‌ها</div>
+            </div>
+
+            <button id="logoutButton" class="logout-button">
                 خروج از حساب
             </button>
         </section>
 
     </main>
 
-    <footer>
-        <p>سامانه مدیریت ناوگان | طراحی مشکی و طلایی</p>
+    <footer class="footer">
+        <span>© 2026 LUXURY TRUCK</span>
+        <span>POWER • LUXURY • MANAGEMENT</span>
     </footer>
 
 </body>
