@@ -44,15 +44,17 @@ function showLogin() {
 switchMode.addEventListener("click", () => {
     isSignUp = !isSignUp;
 
-    if (isSignUp) {
-        formTitle.textContent = "ساخت حساب کاربری";
-        submitButton.textContent = "ثبت نام";
-        switchMode.textContent = "حساب دارید؟ وارد شوید";
-    } else {
-        formTitle.textContent = "خوش آمدید";
-        submitButton.textContent = "ورود به حساب";
-        switchMode.textContent = "حساب ندارید؟ ثبت‌نام کنید";
-    }
+    formTitle.textContent = isSignUp
+        ? "ساخت حساب کاربری"
+        : "خوش آمدید";
+
+    submitButton.textContent = isSignUp
+        ? "ثبت نام"
+        : "ورود به حساب";
+
+    switchMode.textContent = isSignUp
+        ? "حساب دارید؟ وارد شوید"
+        : "حساب ندارید؟ ثبت‌نام کنید";
 
     showMessage("");
 });
@@ -67,35 +69,36 @@ authForm.addEventListener("submit", async (event) => {
     showMessage("لطفاً صبر کنید...", true);
 
     try {
+        let result;
+
         if (isSignUp) {
-            const { data, error } =
-                await supabaseClient.auth.signUp({
-                    email,
-                    password
-                });
+            result = await supabaseClient.auth.signUp({
+                email,
+                password
+            });
 
-            if (error) throw error;
+            if (result.error) throw result.error;
 
-            if (data.session) {
-                showDashboard(data.user);
-                showMessage("حساب شما ساخته شد.", true);
+            if (result.data.session) {
+                showDashboard(result.data.user);
+                showMessage("ثبت‌نام موفق بود.", true);
             } else {
                 showMessage(
-                    "ثبت نام انجام شد. ایمیل خود را برای تأیید بررسی کنید.",
+                    "ثبت‌نام انجام شد. ایمیل خود را تأیید کنید.",
                     true
                 );
             }
 
         } else {
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
+            result = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
 
-            if (error) throw error;
+            if (result.error) throw result.error;
 
-            showDashboard(data.user);
+            showDashboard(result.data.user);
+            showMessage("با موفقیت وارد شدید.", true);
         }
 
     } catch (error) {
@@ -110,12 +113,12 @@ logoutButton.addEventListener("click", async () => {
     const { error } = await supabaseClient.auth.signOut();
 
     if (error) {
-        alert("خطا در خروج: " + error.message);
+        showMessage("خطا در خروج: " + error.message);
         return;
     }
 
-    showLogin();
     authForm.reset();
+    showLogin();
     showMessage("با موفقیت خارج شدید.", true);
 });
 
@@ -130,15 +133,5 @@ async function checkLogin() {
 
     showDashboard(data.session.user);
 }
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN" && session) {
-        showDashboard(session.user);
-    }
-
-    if (event === "SIGNED_OUT") {
-        showLogin();
-    }
-});
 
 checkLogin();
