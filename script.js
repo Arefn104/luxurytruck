@@ -1,4 +1,3 @@
-
 // ==========================================
 // LUXURY TRUCK - MAIN APPLICATION
 // ==========================================
@@ -11,6 +10,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
 let isSignUp = false;
 let lastReminderUserId = null;
+let navigationStack = [];
 
 // ==========================================
 // ELEMENTS
@@ -56,9 +56,71 @@ function showPage(pageId) {
     $(pageId)?.classList.remove("hidden");
 }
 
+// ==========================================
+// NEW NAVIGATION SYSTEM
+// ==========================================
+
+function navigateToPage(pageId) {
+    if (!currentUser || !$(pageId)) return;
+
+    const currentPage = navigationStack[navigationStack.length - 1];
+
+    if (currentPage === pageId) return;
+
+    navigationStack.push(pageId);
+
+    history.pushState(
+        {
+            luxuryTruckNavigation: true,
+            luxuryTruckPage: pageId
+        },
+        "",
+        `#${pageId}`
+    );
+
+    showPage(pageId);
+    loadAllData();
+}
+
+function goBack() {
+    if (navigationStack.length > 1) {
+        history.back();
+    } else {
+        navigateToPage("dashboard");
+    }
+}
+
+window.addEventListener("popstate", event => {
+    if (!currentUser) return;
+
+    const pageId = event.state?.luxuryTruckPage || "dashboard";
+
+    const existingIndex = navigationStack.lastIndexOf(pageId);
+
+    if (existingIndex >= 0) {
+        navigationStack = navigationStack.slice(0, existingIndex + 1);
+    } else {
+        navigationStack.push(pageId);
+    }
+
+    showPage(pageId);
+    loadAllData();
+});
+
+// ==========================================
+// LOGIN AND DASHBOARD
+// ==========================================
+
 function showLogin() {
     currentUser = null;
     lastReminderUserId = null;
+    navigationStack = [];
+
+    history.replaceState(
+        { luxuryTruckNavigation: false },
+        "",
+        location.pathname
+    );
 
     pages.forEach(id => $(id)?.classList.add("hidden"));
     authSection.classList.remove("hidden");
@@ -71,6 +133,20 @@ function showDashboard(user) {
 
     currentUser = user;
     authSection.classList.add("hidden");
+
+    if (isNewLogin) {
+        navigationStack = ["dashboard"];
+
+        history.replaceState(
+            {
+                luxuryTruckNavigation: true,
+                luxuryTruckPage: "dashboard"
+            },
+            "",
+            `${location.pathname}#dashboard`
+        );
+    }
+
     showPage("dashboard");
 
     $("userEmail").textContent = "ایمیل شما: " + user.email;
@@ -238,19 +314,17 @@ async function checkLogin() {
 }
 
 // ==========================================
-// NAVIGATION
+// NAVIGATION BUTTONS
 // ==========================================
 
 document.querySelectorAll("[data-page]").forEach(button => {
     button.addEventListener("click", () => {
-        const page = button.dataset.page;
-        showPage(page);
-        loadAllData();
+        navigateToPage(button.dataset.page);
     });
 });
 
 document.querySelectorAll(".backButton").forEach(button => {
-    button.addEventListener("click", () => showPage("dashboard"));
+    button.addEventListener("click", goBack);
 });
 
 // ==========================================
