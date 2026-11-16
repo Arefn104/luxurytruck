@@ -9,35 +9,39 @@
 body {
     min-height: 100vh;
     background: #050505;
-    color: white;
+    color: #fff;
     overflow-x: hidden;
 }
 
-/* پس زمینه ولوو */
 .background {
     position: fixed;
     inset: 0;
-    z-index: -2;
+    z-index: 0;
     background: url("./Volvo.jpeg") center center / cover no-repeat;
+    pointer-events: none;
 }
 
-/* لایه تاریک روی عکس */
 .dark-overlay {
     position: fixed;
     inset: 0;
-    z-index: -1;
-    background: rgba(0, 0, 0, 0.60);
+    z-index: 0;
+    background: rgba(0, 0, 0, .68);
+    pointer-events: none;
 }
 
-/* سربرگ */
+.header, .main, .footer {
+    position: relative;
+    z-index: 1;
+}
+
 .header {
-    height: 95px;
+    min-height: 95px;
     padding: 15px 7%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(212,175,55,0.4);
-    background: rgba(0,0,0,0.45);
+    border-bottom: 1px solid rgba(212,175,55,.5);
+    background: rgba(0,0,0,.65);
 }
 
 .logo {
@@ -74,7 +78,6 @@ body {
     font-size: 14px;
 }
 
-/* مرکز صفحه */
 .main {
     min-height: calc(100vh - 155px);
     display: flex;
@@ -83,20 +86,22 @@ body {
     padding: 35px 15px;
 }
 
-/* کادر ورود */
-.login-card {
+.login-card, .dashboard {
     width: 100%;
-    max-width: 430px;
-    padding: 38px;
+    max-width: 850px;
+    padding: 35px;
     text-align: center;
-    background: rgba(8,8,8,0.88);
-    border: 1px solid rgba(212,175,55,0.8);
+    background: rgba(8,8,8,.91);
+    border: 1px solid rgba(212,175,55,.8);
     border-radius: 18px;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 45px rgba(212,175,55,0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 45px rgba(212,175,55,.15);
 }
 
-/* لوگوی وسط */
+.login-card {
+    max-width: 430px;
+}
+
 .emblem {
     width: 70px;
     height: 70px;
@@ -110,10 +115,9 @@ body {
     font-weight: bold;
 }
 
-.login-card h1 {
+.login-card h1, .dashboard h1, .dashboard h2 {
     color: #e6c45a;
-    font-size: 27px;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
 }
 
 .description {
@@ -123,7 +127,6 @@ body {
     margin-bottom: 28px;
 }
 
-/* فیلدهای ورود */
 .field {
     text-align: right;
     margin-bottom: 22px;
@@ -136,45 +139,54 @@ body {
     font-size: 14px;
 }
 
-.field input {
+input, select, textarea {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
+    margin: 7px 0;
     background: #171717;
-    border: 1px solid #555;
+    border: 1px solid #625126;
     border-radius: 9px;
     outline: none;
     color: white;
     font-size: 14px;
 }
 
-.field input:focus {
-    border-color: #d4af37;
-    box-shadow: 0 0 12px rgba(212,175,55,0.2);
+input:focus, select:focus, textarea:focus {
+    border-color: #e6c45a;
+    box-shadow: 0 0 12px rgba(212,175,55,.2);
 }
 
-/* دکمه ورود */
-#submitButton,
-.logout-button {
+textarea {
+    min-height: 85px;
+    resize: vertical;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+    transition: .25s;
+}
+
+#submitButton, .data-form button, .logout-button {
     width: 100%;
     padding: 15px;
+    margin-top: 12px;
     background: linear-gradient(135deg,#f5dc83,#b8860b);
     color: #111;
     border: none;
     border-radius: 9px;
     font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
-#submitButton:hover,
+#submitButton:hover, .data-form button:hover,
 .logout-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 20px rgba(212,175,55,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(212,175,55,.3);
 }
 
 #submitButton:disabled {
-    opacity: 0.6;
+    opacity: .6;
     cursor: wait;
 }
 
@@ -184,7 +196,6 @@ body {
     line-height: 1.8;
 }
 
-/* ثبت نام */
 .separator {
     display: flex;
     align-items: center;
@@ -193,8 +204,7 @@ body {
     color: #aaa;
 }
 
-.separator::before,
-.separator::after {
+.separator::before, .separator::after {
     content: "";
     height: 1px;
     background: #555;
@@ -207,26 +217,15 @@ body {
     color: #e6c45a;
     cursor: pointer;
     font-size: 14px;
+    margin: 12px;
 }
 
 .switch-button:hover {
     color: white;
 }
 
-/* داشبورد */
 .dashboard {
-    width: 100%;
     max-width: 850px;
-    padding: 35px;
-    text-align: center;
-    background: rgba(8,8,8,0.94);
-    border: 1px solid #d4af37;
-    border-radius: 18px;
-}
-
-.dashboard h1 {
-    color: #e6c45a;
-    margin-bottom: 15px;
 }
 
 .dashboard-grid {
@@ -237,19 +236,92 @@ body {
 }
 
 .dashboard-item {
-    padding: 23px 10px;
+    min-height: 70px;
+    padding: 20px 12px;
     background: #171717;
     border: 1px solid #806b2d;
     border-radius: 10px;
     color: #e6c45a;
+    font-size: 15px;
 }
 
-/* مخفی کردن بخش ها */
+.dashboard-item:hover {
+    background: #292315;
+    border-color: #e6c45a;
+    transform: translateY(-3px);
+}
+
+.dashboard-item:last-child:nth-child(odd) {
+    grid-column: 2;
+}
+
+.data-form {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+    margin: 25px 0;
+    text-align: right;
+}
+
+.data-form textarea,
+.data-form button {
+    grid-column: 1 / -1;
+}
+
+.records-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 25px;
+    text-align: right;
+}
+
+.record-item {
+    padding: 17px;
+    background: #171717;
+    border: 1px solid #806b2d;
+    border-radius: 10px;
+    color: #eee;
+    line-height: 2;
+}
+
+.record-item strong {
+    color: #e6c45a;
+}
+
+.record-item button {
+    margin: 8px 5px 0;
+    padding: 8px 13px;
+    background: #292315;
+    border: 1px solid #806b2d;
+    border-radius: 7px;
+    color: #e6c45a;
+}
+
+.finance-summary {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.finance-summary p {
+    padding: 17px 8px;
+    background: #171717;
+    border: 1px solid #806b2d;
+    border-radius: 9px;
+    color: #ccc;
+}
+
+.finance-summary strong {
+    display: block;
+    color: #e6c45a;
+    margin-top: 10px;
+}
+
 .hidden {
     display: none !important;
 }
 
-/* پایین صفحه */
 .footer {
     min-height: 60px;
     padding: 15px;
@@ -258,22 +330,28 @@ body {
     align-items: center;
     color: #c5a747;
     font-size: 11px;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,.65);
 }
 
-/* موبایل */
 @media(max-width:600px) {
     .header {
-        height: auto;
         flex-direction: column;
         gap: 15px;
     }
 
-    .login-card {
-        padding: 25px 20px;
+    .login-card, .dashboard {
+        padding: 23px 17px;
     }
 
-    .dashboard-grid {
+    .dashboard-grid, .data-form {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-item:last-child:nth-child(odd) {
+        grid-column: auto;
+    }
+
+    .finance-summary {
         grid-template-columns: 1fr;
     }
 

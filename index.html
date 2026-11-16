@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Truck</title>
+    <title>Luxury Truck | مدیریت ناوگان</title>
     <link rel="stylesheet" href="./style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./script.js" defer></script>
 </head>
@@ -28,56 +27,136 @@
 
     <main class="main">
 
+        <!-- ورود و ثبت نام -->
         <section id="authSection" class="login-card">
             <div class="emblem">LT</div>
-
             <h1 id="formTitle">خوش آمدید</h1>
             <p class="description">به دنیای لوکس مدیریت کامیون‌ها خوش آمدید</p>
 
             <form id="authForm">
-
                 <div class="field">
                     <label for="email">ایمیل کاربری</label>
-                    <input type="email" id="email"
-                        placeholder="ایمیل خود را وارد کنید" required>
+                    <input type="email" id="email" required placeholder="ایمیل خود را وارد کنید">
                 </div>
 
                 <div class="field">
                     <label for="password">رمز عبور</label>
-                    <input type="password" id="password"
-                        placeholder="رمز عبور خود را وارد کنید"
-                        minlength="6" required>
+                    <input type="password" id="password" required minlength="6" placeholder="رمز عبور خود را وارد کنید">
                 </div>
 
-                <button type="submit" id="submitButton">
-                    ورود به حساب
-                </button>
-
+                <button type="submit" id="submitButton">ورود به حساب</button>
                 <p id="message"></p>
             </form>
 
             <div class="separator"><span>یا</span></div>
-
             <button type="button" id="switchMode" class="switch-button">
                 حساب ندارید؟ ثبت‌نام کنید
             </button>
         </section>
 
+        <!-- داشبورد اصلی -->
         <section id="dashboard" class="dashboard hidden">
-            <h1>به Luxury Truck خوش آمدید</h1>
+            <h1>داشبورد Luxury Truck</h1>
             <p id="userEmail"></p>
 
             <div class="dashboard-grid">
-                <div class="dashboard-item">🚛 مدیریت کامیون‌ها</div>
-                <div class="dashboard-item">🔧 تعمیر و نگهداری</div>
-                <div class="dashboard-item">💰 حسابداری</div>
-                <div class="dashboard-item">📅 برنامه روزانه</div>
-                <div class="dashboard-item">🔔 اعلان‌ها</div>
+                <button class="dashboard-item" data-page="trucksPage">🚛 مدیریت کامیون‌ها</button>
+                <button class="dashboard-item" data-page="maintenancePage">🔧 تعمیر و نگهداری</button>
+                <button class="dashboard-item" data-page="financePage">💰 حسابداری</button>
+                <button class="dashboard-item" data-page="tasksPage">📅 برنامه روزانه</button>
+                <button class="dashboard-item" data-page="notificationsPage">🔔 اعلان‌ها</button>
             </div>
 
-            <button id="logoutButton" class="logout-button">
-                خروج از حساب
-            </button>
+            <button id="logoutButton" class="logout-button">خروج از حساب</button>
+        </section>
+
+        <!-- مدیریت کامیون ها -->
+        <section id="trucksPage" class="dashboard hidden">
+            <h2>🚛 مدیریت کامیون‌ها</h2>
+            <button class="switch-button backButton">بازگشت به داشبورد</button>
+
+            <form id="truckForm" class="data-form">
+                <input id="truckName" required placeholder="نام کامیون، مثال: اسکانیا ۱">
+                <select id="truckBrand" required>
+                    <option value="Scania">اسکانیا</option>
+                    <option value="Volvo">ولوو</option>
+                </select>
+                <input id="truckModel" placeholder="مدل کامیون">
+                <input id="truckPlate" placeholder="شماره پلاک">
+                <input id="truckMileage" type="number" min="0" placeholder="کیلومتر کارکرد">
+                <button type="submit">ثبت کامیون</button>
+            </form>
+
+            <div id="trucksList" class="records-list"></div>
+        </section>
+
+        <!-- تعمیر و نگهداری -->
+        <section id="maintenancePage" class="dashboard hidden">
+            <h2>🔧 تعمیر و نگهداری</h2>
+            <button class="switch-button backButton">بازگشت به داشبورد</button>
+
+            <form id="maintenanceForm" class="data-form">
+                <select id="maintenanceTruck" required></select>
+                <input id="maintenanceTitle" required placeholder="عنوان تعمیر، مثال: تعمیر دینام">
+                <input id="maintenanceDate" type="date">
+                <input id="maintenanceNextDate" type="date">
+                <input id="maintenanceCost" type="number" min="0" placeholder="هزینه تعمیر">
+                <textarea id="maintenanceDescription" placeholder="توضیحات"></textarea>
+                <button type="submit">ثبت تعمیر</button>
+            </form>
+
+            <div id="maintenanceList" class="records-list"></div>
+        </section>
+
+        <!-- حسابداری -->
+        <section id="financePage" class="dashboard hidden">
+            <h2>💰 حسابداری ناوگان</h2>
+            <button class="switch-button backButton">بازگشت به داشبورد</button>
+
+            <div class="finance-summary">
+                <p>مجموع درآمد: <strong id="totalIncome">۰</strong></p>
+                <p>مجموع هزینه: <strong id="totalExpense">۰</strong></p>
+                <p>سود: <strong id="totalProfit">۰</strong></p>
+            </div>
+
+            <form id="transactionForm" class="data-form">
+                <select id="transactionTruck"></select>
+                <select id="transactionType" required>
+                    <option value="income">درآمد</option>
+                    <option value="expense">هزینه</option>
+                </select>
+                <input id="transactionTitle" required placeholder="عنوان تراکنش">
+                <input id="transactionAmount" type="number" min="0" required placeholder="مبلغ">
+                <input id="transactionDate" type="date">
+                <textarea id="transactionDescription" placeholder="توضیحات"></textarea>
+                <button type="submit">ثبت تراکنش</button>
+            </form>
+
+            <div id="transactionsList" class="records-list"></div>
+        </section>
+
+        <!-- برنامه روزانه -->
+        <section id="tasksPage" class="dashboard hidden">
+            <h2>📅 برنامه روزانه</h2>
+            <button class="switch-button backButton">بازگشت به داشبورد</button>
+
+            <form id="taskForm" class="data-form">
+                <select id="taskTruck"></select>
+                <input id="taskTitle" required placeholder="عنوان کار">
+                <input id="taskDate" type="date" required>
+                <input id="taskTime" type="time">
+                <textarea id="taskDescription" placeholder="توضیحات"></textarea>
+                <button type="submit">ثبت برنامه</button>
+            </form>
+
+            <div id="tasksList" class="records-list"></div>
+        </section>
+
+        <!-- اعلان ها -->
+        <section id="notificationsPage" class="dashboard hidden">
+            <h2>🔔 اعلان‌های سایت</h2>
+            <button class="switch-button backButton">بازگشت به داشبورد</button>
+            <div id="notificationsList" class="records-list"></div>
         </section>
 
     </main>
