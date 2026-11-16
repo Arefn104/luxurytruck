@@ -10,6 +10,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 let isSignUp = false;
+let lastReminderUserId = null;
 
 // ==========================================
 // ELEMENTS
@@ -57,20 +58,38 @@ function showPage(pageId) {
 
 function showLogin() {
     currentUser = null;
+    lastReminderUserId = null;
+
     pages.forEach(id => $(id)?.classList.add("hidden"));
     authSection.classList.remove("hidden");
 }
 
 function showDashboard(user) {
+    if (!user) return;
+
+    const isNewLogin = lastReminderUserId !== user.id;
+
     currentUser = user;
     authSection.classList.add("hidden");
     showPage("dashboard");
+
     $("userEmail").textContent = "ایمیل شما: " + user.email;
+
     loadAllData();
+
+    if (isNewLogin) {
+        lastReminderUserId = user.id;
+        showTomorrowTasks();
+    }
 }
 
 function today() {
-    return new Date().toISOString().slice(0, 10);
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 
 function money(value) {
@@ -82,6 +101,8 @@ function userId() {
 }
 
 function notify(title, text) {
+    if (!currentUser) return Promise.resolve();
+
     return db.from("notifications").insert({
         user_id: userId(),
         title,
@@ -252,9 +273,15 @@ $("truckForm").addEventListener("submit", async event => {
         if (error) throw error;
 
         $("truckForm").reset();
-        await notify("کامیون جدید", "یک کامیون به ناوگان اضافه شد.");
+
+        await notify(
+            "کامیون جدید",
+            "یک کامیون به ناوگان اضافه شد."
+        );
+
         await loadAllData();
         alert("کامیون با موفقیت ثبت شد.");
+
     } catch (error) {
         showError(error);
     }
@@ -282,7 +309,8 @@ async function loadTrucks() {
     `).join("");
 
     ["maintenanceTruck", "transactionTruck", "taskTruck"].forEach(id => {
-        $(id).innerHTML = '<option value="">انتخاب کامیون</option>' + options;
+        $(id).innerHTML =
+            '<option value="">انتخاب کامیون</option>' + options;
     });
 }
 
@@ -294,10 +322,12 @@ $("maintenanceForm").addEventListener("submit", async event => {
     event.preventDefault();
 
     try {
+        const maintenanceTitle = $("maintenanceTitle").value.trim();
+
         const { error } = await db.from("maintenance").insert({
             user_id: userId(),
             truck_id: $("maintenanceTruck").value || null,
-            title: $("maintenanceTitle").value.trim(),
+            title: maintenanceTitle,
             service_date: $("maintenanceDate").value || null,
             next_service_date: $("maintenanceNextDate").value || null,
             cost: Number($("maintenanceCost").value || 0),
@@ -308,9 +338,12 @@ $("maintenanceForm").addEventListener("submit", async event => {
         if (error) throw error;
 
         $("maintenanceForm").reset();
-        await notify("تعمیر جدید ثبت شد", $("maintenanceTitle").value);
+
+        await notify("تعمیر جدید ثبت شد", maintenanceTitle);
         await loadAllData();
+
         alert("تعمیر با موفقیت ثبت شد.");
+
     } catch (error) {
         showError(error);
     }
@@ -357,9 +390,12 @@ $("transactionForm").addEventListener("submit", async event => {
         if (error) throw error;
 
         $("transactionForm").reset();
+
         await notify("تراکنش جدید", title);
         await loadAllData();
+
         alert("تراکنش ثبت شد.");
+
     } catch (error) {
         showError(error);
     }
@@ -417,9 +453,12 @@ $("taskForm").addEventListener("submit", async event => {
         if (error) throw error;
 
         $("taskForm").reset();
+
         await notify("برنامه جدید", title);
         await loadAllData();
+
         alert("برنامه ثبت شد.");
+
     } catch (error) {
         showError(error);
     }
@@ -500,6 +539,7 @@ document.addEventListener("click", async event => {
             .eq("user_id", userId());
 
         if (result.error) return showError(result.error);
+
         return loadTasks();
     }
 
@@ -512,6 +552,7 @@ document.addEventListener("click", async event => {
             .eq("user_id", userId());
 
         if (error) return showError(error);
+
         return loadNotifications();
     }
 });
@@ -529,8 +570,188 @@ async function loadAllData() {
         await loadFinance();
         await loadTasks();
         await loadNotifications();
+
     } catch (error) {
         showError(error);
+    }
+}
+
+// ==========================================
+// TOMORROW TASK REMINDER
+// ==========================================
+
+function getTomorrowDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+async function showTomorrowTasks() {
+    if (!currentUser) return;
+
+    try {
+        const tomorrow = getTomorrowDate();
+
+        const { data: tasks, error } = await db
+            .from("daily_tasks")
+            .select("id, title, task_time, description, truck_id, completed")
+            .eq("user_id", userId())
+            .eq("task_date", tomorrow)
+            .eq("completed", false)
+            .order("task_time", { ascending: true });
+
+        if (error) throw error;
+
+        const { data: trucks, error: trucksError } = await db
+            .from("trucks")
+            .select("id, name")
+            .eq("user_id", userId());
+
+        if (trucksError) throw trucksError;
+
+        const truckNames = Object.fromEntries(
+            (trucks || []).map(truck => [truck.id, truck.name])
+        );
+
+        const oldModal = document.getElementById("tomorrowTasksModal");
+        if (oldModal) oldModal.remove();
+
+        if (!document.getElementById("tomorrowTasksStyles")) {
+            const style = document.createElement("style");
+            style.id = "tomorrowTasksStyles";
+
+            style.textContent = `
+                #tomorrowTasksModal {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 99999;
+                    background: rgba(0,0,0,.85);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 18px;
+                    direction: rtl;
+                }
+
+                #tomorrowTasksModal .tomorrow-box {
+                    width: min(520px, 100%);
+                    max-height: 85vh;
+                    overflow: auto;
+                    background: #111;
+                    color: #f5f0df;
+                    border: 1px solid #d4af37;
+                    border-radius: 18px;
+                    padding: 22px;
+                    box-shadow: 0 15px 60px #000;
+                }
+
+                #tomorrowTasksModal h2 {
+                    color: #d4af37;
+                    margin: 0 0 12px;
+                    font-size: 22px;
+                }
+
+                #tomorrowTasksModal .tomorrow-date {
+                    color: #c5b98e;
+                    margin-bottom: 18px;
+                    font-size: 13px;
+                }
+
+                #tomorrowTasksModal .tomorrow-task {
+                    background: #201e18;
+                    border: 1px solid #51451f;
+                    border-radius: 12px;
+                    padding: 13px;
+                    margin: 10px 0;
+                    line-height: 2;
+                }
+
+                #tomorrowTasksModal .tomorrow-task strong {
+                    color: #e4c65a;
+                }
+
+                #tomorrowTasksModal .tomorrow-close {
+                    width: 100%;
+                    margin-top: 16px;
+                    padding: 12px;
+                    border: 0;
+                    border-radius: 10px;
+                    background: #d4af37;
+                    color: #111;
+                    font-weight: bold;
+                    font-size: 15px;
+                    cursor: pointer;
+                }
+
+                #tomorrowTasksModal .tomorrow-empty {
+                    padding: 18px;
+                    background: #201e18;
+                    border-radius: 12px;
+                    line-height: 2;
+                }
+            `;
+
+            document.head.appendChild(style);
+        }
+
+        const taskContent = tasks && tasks.length
+            ? tasks.map(task => `
+                <div class="tomorrow-task">
+                    <strong>${escapeHTML(task.title)}</strong><br>
+                    ساعت: ${escapeHTML(task.task_time || "تعیین نشده")}<br>
+                    کامیون: ${escapeHTML(
+                        truckNames[task.truck_id] || "مشخص نشده"
+                    )}
+                    ${task.description
+                        ? `<br>توضیحات: ${escapeHTML(task.description)}`
+                        : ""}
+                </div>
+            `).join("")
+            : `
+                <div class="tomorrow-empty">
+                    برای فردا برنامه ثبت‌نشده یا همه کارها انجام شده‌اند. 🌟
+                </div>
+            `;
+
+        const modal = document.createElement("div");
+        modal.id = "tomorrowTasksModal";
+
+        modal.innerHTML = `
+            <div class="tomorrow-box">
+                <h2>🔔 برنامه‌های فردا</h2>
+
+                <div class="tomorrow-date">
+                    کارهای باقی‌مانده برای
+                    ${new Date(tomorrow + "T12:00:00").toLocaleDateString("fa-IR")}
+                </div>
+
+                ${taskContent}
+
+                <button type="button" class="tomorrow-close">
+                    متوجه شدم
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector(".tomorrow-close").addEventListener("click", () => {
+            modal.remove();
+        });
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) {
+                modal.remove();
+            }
+        });
+
+    } catch (error) {
+        console.error("Tomorrow tasks reminder error:", error);
     }
 }
 
